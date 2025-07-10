@@ -19,15 +19,15 @@ def predict_price(df):
     df.dropna(inplace=True)
 
     X = df[['Open', 'High', 'Low', 'Close', 'Volume']]
-    y = df['Target'].values.ravel()  # ✅ Flatten to 1D
+    y = df['Target'].values.reshape(-1)  # ✅ Flatten to 1D (avoid shape like (548, 1))
 
     model = LinearRegression()
     model.fit(X, y)
 
-    # Ensure 2D array for prediction
-    latest_input = X.iloc[-1].values.reshape(1, -1)
-    pred = model.predict(latest_input)[0]
-    return pred
+    latest_input = X.iloc[-1].values.reshape(1, -1)  # ✅ Reshape to (1, features)
+    prediction = model.predict(latest_input)[0]
+    return prediction
+
 
 def fetch_news(stock):
     url = f"https://www.google.com/search?q={stock}+stock+news+site:moneycontrol.com&tbm=nws"
