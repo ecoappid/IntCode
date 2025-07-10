@@ -11,21 +11,23 @@ st.title("📈 AI-Powered Intraday Stock Analyzer")
 symbols = st.text_input("Enter stock symbols (comma-separated, e.g., INFY.NS, TCS.NS):", "INFY.NS, TCS.NS")
 symbol_list = [s.strip() for s in symbols.split(",")]
 
-def predict_price(df):
-    from sklearn.linear_model import LinearRegression
+from sklearn.linear_model import LinearRegression
 
+def predict_price(df):
     df['Target'] = df['Close'].shift(-1)
     df.dropna(inplace=True)
+
     X = df[['Open', 'High', 'Low', 'Close', 'Volume']]
-    y = df['Target'].values.ravel()  # ✅ flatten y to 1D
+    y = df['Target'].values.reshape(-1)  # ✅ Force 1D array
 
     model = LinearRegression()
     model.fit(X, y)
 
-    # ✅ FIX: Convert last row of X to correct shape
-    latest = X.iloc[-1].values.reshape(1, -1)
-    pred = model.predict(latest)[0]
-    return pred
+    # ✅ Latest input reshaped to 2D
+    latest_input = X.iloc[-1].values.reshape(1, -1)
+    predicted_price = model.predict(latest_input)[0]
+
+    return predicted_price
 
 def fetch_news(stock):
     url = f"https://www.google.com/search?q={stock}+stock+news+site:moneycontrol.com&tbm=nws"
