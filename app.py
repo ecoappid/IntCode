@@ -12,15 +12,19 @@ symbols = st.text_input("Enter stock symbols (comma-separated, e.g., INFY.NS, TC
 symbol_list = [s.strip() for s in symbols.split(",")]
 
 def predict_price(df):
+    from sklearn.linear_model import LinearRegression
+
     df['Target'] = df['Close'].shift(-1)
     df.dropna(inplace=True)
     X = df[['Open', 'High', 'Low', 'Close', 'Volume']]
-    y = df['Target']
-    model = LinearRegression().fit(X, y)
-    
-    # FIX: Reshape single row for prediction properly
-    latest_data = X.iloc[-1].values.reshape(1, -1)
-    pred = model.predict(latest_data)[0]
+    y = df['Target'].values.ravel()  # ✅ flatten y to 1D
+
+    model = LinearRegression()
+    model.fit(X, y)
+
+    # ✅ FIX: Convert last row of X to correct shape
+    latest = X.iloc[-1].values.reshape(1, -1)
+    pred = model.predict(latest)[0]
     return pred
 
 def fetch_news(stock):
