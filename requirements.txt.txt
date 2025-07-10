@@ -1,7 +1,0 @@
-streamlit
-yfinance
-pandas
-ta
-scikit-learn
-beautifulsoup4
-requests
