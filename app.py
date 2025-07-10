@@ -18,19 +18,19 @@ def predict_price(df):
     df['Target'] = df['Close'].shift(-1)
     df.dropna(inplace=True)
 
-    # Features and target
+    # Feature matrix (X) and target vector (y)
     X = df[['Open', 'High', 'Low', 'Close', 'Volume']]
-    y = df['Target'].values.reshape(-1,)  # Force 1D array
+    y = df['Target'].values.reshape(-1,)  # ✅ Ensure 1D array
 
-    # Fit model
     model = LinearRegression()
     model.fit(X, y)
 
-    # Predict using latest row
-    latest = np.array([X.iloc[-1].values])  # Ensure proper 2D shape
-    pred = model.predict(latest)[0]         # Get scalar prediction
+    # ✅ Ensure 2D shape for prediction input
+    latest_input = np.array([X.iloc[-1].values])
+    prediction = model.predict(latest_input)[0]
 
-    return pred
+    return prediction
+
 
 
 def fetch_news(stock):
