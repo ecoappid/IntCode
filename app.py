@@ -12,22 +12,26 @@ symbols = st.text_input("Enter stock symbols (comma-separated, e.g., INFY.NS, TC
 symbol_list = [s.strip() for s in symbols.split(",")]
 
 from sklearn.linear_model import LinearRegression
+import numpy as np
 
 def predict_price(df):
     df['Target'] = df['Close'].shift(-1)
     df.dropna(inplace=True)
 
+    # Features and target
     X = df[['Open', 'High', 'Low', 'Close', 'Volume']]
-    y = df['Target'].values.reshape(-1)  # ✅ Force 1D array
+    y = df['Target'].values.reshape(-1,)  # Force 1D array
 
+    # Fit model
     model = LinearRegression()
     model.fit(X, y)
 
-    # ✅ Latest input reshaped to 2D
-    latest_input = X.iloc[-1].values.reshape(1, -1)
-    predicted_price = model.predict(latest_input)[0]
+    # Predict using latest row
+    latest = np.array([X.iloc[-1].values])  # Ensure proper 2D shape
+    pred = model.predict(latest)[0]         # Get scalar prediction
 
-    return predicted_price
+    return pred
+
 
 def fetch_news(stock):
     url = f"https://www.google.com/search?q={stock}+stock+news+site:moneycontrol.com&tbm=nws"
