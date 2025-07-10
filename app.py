@@ -14,18 +14,26 @@ symbol_list = [s.strip() for s in symbols.split(",")]
 from sklearn.linear_model import LinearRegression
 import numpy as np
 
+from sklearn.linear_model import LinearRegression
+import numpy as np
+
 def predict_price(df):
+    # Prepare dataset
     df['Target'] = df['Close'].shift(-1)
     df.dropna(inplace=True)
 
+    # Features and target
     X = df[['Open', 'High', 'Low', 'Close', 'Volume']]
-    y = df['Target'].values.reshape(-1)  # ✅ Flatten to 1D (avoid shape like (548, 1))
+    y = df['Target'].values.reshape(-1)  # ✅ Make sure it's 1D, shape (n,)
 
+    # Train model
     model = LinearRegression()
     model.fit(X, y)
 
-    latest_input = X.iloc[-1].values.reshape(1, -1)  # ✅ Reshape to (1, features)
+    # Make prediction on latest row
+    latest_input = X.iloc[-1].values.reshape(1, -1)  # ✅ 2D shape (1, n)
     prediction = model.predict(latest_input)[0]
+
     return prediction
 
 
